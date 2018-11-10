@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>分类管理--管理分类</title>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>管理分类</span>
+                </div>
+                <el-table :data="tableData" style="width: 100%">
+                    <el-table-column label="分类名称">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.name }}</span>
+                        </template>
+                        <!-- <el-table :data="tableData2" style="width: 100%">
+                            <el-table-column prop="goodsName" label="商品名">
+                            </el-table-column>
+                        </el-table> -->
+                    </el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" type="primary" plain>
+                                <i class="el-icon-edit"></i> 编辑</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-card>
+        </el-main>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    tableData: [
+                        { name: '日用品', },
+                        { name: '食品', },
+                        { name: '酒水', },
+                    ],
+                    // tableData2: [
+                    //     { goodsName: '日用品', },
+                    //     { goodsName: '食品', },
+                    //     { goodsName: '酒水', },
+                    // ]
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

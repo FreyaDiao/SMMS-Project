@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>账号管理--管理账号</title>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入moment -->
+    <script src="./javascripts/moment.min.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-main class="accountMangt">
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>账号管理</span>
+                </div>
+                <el-table :data="tableData" style="width: 100%">
+                    <el-table-column label="ID" width="100px">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.u_id }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="用户名称">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.userName }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="用户组">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.userGroup }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="创建日期" prop="u_createTime" :formatter="dateFormat">
+                    </el-table-column>
+                    <el-table-column label="是否锁定">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.isLocked }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="管理">
+                        <template slot-scope="scope">
+                            <el-button size="mini" type="primary" plain @click="handleEdit(scope.row)">
+                                <i class="el-icon-edit"></i> 编辑</el-button>
+                            <el-button size="mini" type="danger" plain @click="handleDelete(scope.$index, scope.row)">
+                                <i class="el-icon-delete"></i> 删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-card>
+        </el-main>
+    </div>
+
+    <script>
+        let VM = new Vue({
+            el: "#app",
+            data() {
+                return {
+                    tableData: []
+                }
+            },
+            methods: {
+
+                delSuccess() {
+                    this.$message('删除成功');
+                    type: 'success'
+                },
+                //编辑账号
+                handleEdit(row) {
+                    //跳转到编辑页面
+                    location.href = 'account_edit.html?u_id='+row.u_id;
+                    //console.log(row);
+                },
+
+                handleDelete(index, row) {
+                    //弹窗确认是否删除
+                    let bool = confirm('确定删除吗？')
+                    //发起ajax删除数据
+                    if (bool) {
+                        $.get('/users/del', row, function (result) {
+                            if (result.isSuccess) {
+                                $.get('/users/mangt', (userList) => {
+                                    VM.tableData = userList;
+                                    VM.delSuccess();
+                                })
+                            } else {
+                                alert(result.msg);
+                            }
+                        })
+                    } else {
+                        return false;
+                    }
+                },
+                dateFormat: function (row, column) {
+                    var date = row[column.property];
+                    if (date == undefined) {
+                        return "";
+                    }
+                    return moment(date).format("YYYY-MM-DD");
+                },
+
+            },
+            mounted() {
+                $.get('/users/mangt', (userList) => {
+                    userList.forEach(v => {
+                        if (v.isLocked) {
+                            v.isLocked = '已锁定';
+                        } else {
+                            v.isLocked = '正常';
+                        }
+                    });
+                    VM.tableData = userList;
+                })
+            }
+        })
+
+
+    </script>
+
+</body>
+
+</html>

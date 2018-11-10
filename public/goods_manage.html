@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品管理--管理商品</title>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-main class="goodsManage">
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>管理商品</span>
+                </div>
+                <el-form :inline="true" :model="formInline" class="demo-form-inline">
+                    <el-form-item label="选择分类">
+                        <el-select v-model="formInline.goodsSort" placeholder="--- 选择分类 ---">
+                            <el-option label="食品" value="食品"></el-option>
+                            <el-option label="日用品" value="日用品"></el-option>
+                            <el-option label="酒水" value="酒水"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="关键字：">
+                        <el-input v-model="formInline.keywords"></el-input>
+                        <span>(商品名称，条形码)</span>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @click="onSubmit">查询</el-button>
+                    </el-form-item>
+                </el-form>
+
+
+                <el-table :data="tableData" stripe style="width: 100%">
+                    <el-table-column label="分类条形码" width="150px">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.barcode }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="分类名称" width="150px">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.goodsName }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="所属分类">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.goodsType }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="售价(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.salePrice }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="促销价(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.discountPrice }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="市场价(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.marketPrice }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="库存">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.storage }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="库存总额(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.totalStorageAmount }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="库存总额(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.salesAmount }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="150px">
+                        <template slot-scope="scope">
+                            <el-button size="mini" type="primary" plain @click="handleEdit(scope.$index, scope.row)">
+                                <i class="el-icon-edit"></i>
+                            </el-button>
+                            <el-button size="mini" type="danger" plain @click="handleDelete(scope.$index, scope.row)">
+                                <i class="el-icon-delete"></i>
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+
+                <el-pagination :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" prev-text="上一页" next-text="下一页"
+                    :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="40">
+                </el-pagination>
+            </el-card>
+        </el-main>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    currentPage: 2,
+                    formInline: {
+                        keywords: '',
+                        goodsSort: ''
+                    },
+                    tableData: [
+                        {
+                            barcode: '6911989262549',
+                            goodsName: '我的优乐美',
+                            goodsType: '优乐美',
+                            salePrice: '2.00',
+                            discountPrice: '未促销',
+                            marketPrice: '2.40',
+                            storage: '0(缺)',
+                            totalStorageAmount: '0.00',
+                            salesAmount: '0.00',
+                        },
+                        {
+                            barcode: '6911989262550',
+                            goodsName: '我的优乐美',
+                            goodsType: '优乐美',
+                            salePrice: '2.00',
+                            discountPrice: '未促销',
+                            marketPrice: '2.40',
+                            storage: '0(缺)',
+                            totalStorageAmount: '0.00',
+                            salesAmount: '0.00',
+                        },
+                        {
+                            barcode: '6911989262548',
+                            goodsName: '我的优乐美',
+                            goodsType: '优乐美',
+                            salePrice: '2.00',
+                            discountPrice: '未促销',
+                            marketPrice: '2.40',
+                            storage: '0(缺)',
+                            totalStorageAmount: '0.00',
+                            salesAmount: '0.00',
+                        },
+                        {
+                            barcode: '6911989262547',
+                            goodsName: '我的优乐美',
+                            goodsType: '优乐美',
+                            salePrice: '2.00',
+                            discountPrice: '未促销',
+                            marketPrice: '2.40',
+                            storage: '0(缺)',
+                            totalStorageAmount: '0.00',
+                            salesAmount: '0.00',
+                        },
+                    ]
+                }
+            },
+            methods: {
+                onSubmit() {
+                    console.log('submit!');
+                },
+                handleEdit(index, row) {
+                    console.log(index, row);
+                },
+                handleDelete(index, row) {
+                    console.log(index, row);
+                },
+                
+            }
+        })
+    </script>
+</body>
+
+</html>
