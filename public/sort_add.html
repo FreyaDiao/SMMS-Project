@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>分类管理--添加分类</title>
+    <!-- cookie围墙 -->
+    <script src="/users/checkCookie"></script>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>添加分类</span>
+                </div>
+                <el-form ref="form" :model="form" :rules="rules" label-position="top">
+                    <el-form-item label="所属分类：">
+                        <el-select v-model="form.cg_fatherID" placeholder="请选择分类">
+                            <el-option label="---顶级分类---" value="0" selected></el-option>
+                            <el-option v-for='(cg,i) in categoryList' :key='i' :label="cg.cg_name" :value="cg.cg_id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="分类名称：" prop="cg_name">
+                        <el-input v-model="form.cg_name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态：" prop='cg_isEnable'>
+                        <el-radio v-model="form.cg_isEnable" :label="1">启用</el-radio>
+                        <el-radio v-model="form.cg_isEnable" :label="0">禁用</el-radio>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @click="onSubmit">添加</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-card>
+        </el-main>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    form: {
+                        cg_fatherID: '0',
+                        cg_name: '',
+                        cg_isEnable: 1
+                    },
+                    categoryList:[],
+                    rules: {
+                        cg_name: [
+                            { required: true, message: '请输入分类名称', trigger: 'blur' },
+                        ],
+                    }
+                }
+            },
+            methods: {
+                onSubmit() {
+                    //提交时发送ajax请求
+                    $.post('/category/add',this.form,(result)=>{
+                        //前端接收数据并处理业务逻辑
+                        if(result.isOk){
+                            if(confirm('是否继续添加')){
+                                location.reload();
+                            }else{
+                                location.href='sort_manage.html';
+                            }
+                        }else{
+                            alert(result.msg);
+                        }
+                    })
+                }
+            },
+            mounted(){
+                $.get('/category/mangt',(categoryList)=>{
+                    this.categoryList = categoryList;
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品管理--添加商品</title>
+    <!-- cookie围墙 -->
+    <script src="/users/checkCookie"></script>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>添加商品</span>
+                </div>
+                <el-form ref="form" :model="form" :rules="rules" ref="form" label-position="top" class="goodsAdd">
+                    <el-form-item label="所属分类：" prop="cg_id">
+                        <el-select v-model="form.cg_id" placeholder="--- 选择分类 ---">
+                            <el-option v-for='(v,i) in categoryList' :key='i' :label="v.cg_name" :value="v.cg_id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="商品条形码：" prop="barcode">
+                        <el-input v-model="form.barcode"></el-input>
+                        <el-button type="success" @click='getBarcode'>生成条形码</el-button>
+                    </el-form-item>
+                    <el-form-item label="商品名称：" prop="goodsname">
+                        <el-input v-model="form.goodsname"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商品进价：" prop="goodsprice">
+                        <el-input v-model="form.goodsprice" @blur='autoGetPrice'></el-input>
+                        <span>元</span>
+                    </el-form-item>
+                    <el-form-item label="商品售价：" prop="saleprice">
+                        <el-input v-model="form.saleprice" @blur='autoGetPrice'></el-input>
+                        <span>元</span>
+                    </el-form-item>
+                    <el-form-item label="市场价：" prop="marketprice">
+                        <el-input v-model="form.marketprice" @blur='autoGetPrice'></el-input>
+                        <span>元</span>
+                        <p class="tips">默认市场价为售价的1.2倍</p>
+                    </el-form-item>
+
+                    <el-form-item label="入库数量" prop="stockNum">
+                        <el-input v-model="form.stockNum"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商品重量：" prop="weigth">
+                        <el-input v-model="form.weigth"></el-input>
+                        <p class="tips">计重商品单位为千克</p>
+                    </el-form-item>
+                    <el-form-item label="商品单位：" prop="unit">
+                        <el-input v-model="form.unit"></el-input>
+                    </el-form-item>
+                    <el-form-item label="会员优惠：">
+                        <el-radio v-model="form.discount" :label="1">享受</el-radio>
+                        <el-radio v-model="form.discount" :label="0">不享受</el-radio>
+                    </el-form-item>
+                    <el-form-item label="是否促销">
+                        <el-radio v-model="form.promotion" :label="1">启用</el-radio>
+                        <el-radio v-model="form.promotion" :label="0">禁用</el-radio>
+                    </el-form-item>
+                    <el-form-item label="商品简介" label-width="500px">
+                        <el-input rows="5" type="textarea" v-model="form.goodsDetails"></el-input>
+                        <p class="tips">不超过200个汉字</p>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-form-item>
+                            <el-button type="success" @click="onSubmit('form')">添加</el-button>
+                        </el-form-item>
+                </el-form>
+            </el-card>
+        </el-main>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    form: {
+                        cg_id: null, //选择分类
+                        barcode: '', //条码
+                        goodsname: '', //商品名称
+                        goodsprice: 0.00,  //商品进价
+                        marketprice: 0.00, //市场价
+                        saleprice: 0.00,    //销售价
+                        stockNum: 0,   //库存数量 
+                        weigth: 0,     //重量
+                        unit: '',        //单位
+                        promotion: 0,  //是否促销
+                        discount: 1,    //优惠折扣
+                        goodsDetails: ''  //商品详情
+                    },
+                    categoryList: [],
+                    rules: {
+                        goodsname: [
+                            { required: true, message: '请输入商品名称', trigger: 'blur' },
+                        ],
+                        cg_id: [
+                            { required: true, message: '请输入分类名称', trigger: 'change' },
+                        ],
+                        barcode: [
+                            { required: true, message: '请输入二维码', trigger: 'change' },
+                        ],
+                        goodsprice: [
+                            { required: true, message: '请输入进价', trigger: 'blur' },
+                        ],
+                    }
+                }
+            },
+            methods: {
+                onSubmit(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            //验证成功，发送ajax到后台添加数据
+                            $.post('/goods/add', this.form, (result) => {
+                                //前端接收数据并处理业务逻辑
+                                if (result.isOk) {
+                                    if (confirm('添加完成，是否继续添加？')) {
+                                        location.reload();
+                                    } else {
+                                        location.href = 'goods_manage.html';
+                                    }
+                                } else {
+                                    this.$message.error(result.msg);
+                                }
+                            })
+                            // console.log(this.form)
+                        } else {
+                            this.$message.error('无法提交！！');
+                            return false;
+                        }
+                    });
+                },
+                //获取二维码的方法
+                getBarcode() {
+                    this.form.barcode = new Date().getTime();
+                },
+                //计算商品的售价和市场价
+                autoGetPrice() {
+                    this.form.goodsprice = parseFloat(this.form.goodsprice).toFixed(2);
+                    this.form.marketprice = (this.form.goodsprice * 2).toFixed(2);
+                    this.form.saleprice = (this.form.marketprice * 0.9).toFixed(2);
+                }
+            },
+            //获取数据
+            mounted() {
+                $.get('/category/mangt', (categoryList) => {
+                    this.categoryList = categoryList;
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>

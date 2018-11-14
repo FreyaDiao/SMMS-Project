@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市管理系统首页</title>
+    <link rel="shortcut icon" href="images/logo6.ico">
+    <!-- cookie围墙 -->
+    <script src="/users/checkCookie"></script>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <!-- 左侧边栏 -->
+            <el-aside width="230px">
+                <h1>华联超市管理系统</h1>
+                <p>您好! {{loginName}}</p>
+                <p>
+                    <a href="homePage.html" target="mainCont">管理首页</a> |
+                    <a href="/users/logout">退出系统</a>
+                </p>
+                <el-menu unique-opened default-active="8-1" class="el-menu-vertical-demo">
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <span>分类管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="1-1"><a href="sort_manage.html" target="mainCont">分类管理</a></el-menu-item>
+                            <el-menu-item index="1-2"><a href="sort_add.html" target="mainCont">添加分类</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="2">
+                        <template slot="title">
+                            <span>商品管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="2-1"><a href="goods_manage.html" target="mainCont">商品管理</a></el-menu-item>
+                            <el-menu-item index="2-2"><a href="goods_add.html" target="mainCont">添加商品</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title">
+                            <span>进货管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="3-1"><a href="#">库存管理</a></el-menu-item>
+                            <el-menu-item index="3-2"><a href="#">添加库存</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="4">
+                        <template slot="title">
+                            <span>出货管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="4-1"><a href="#">销售列表</a></el-menu-item>
+                            <el-menu-item index="4-2"><a href="#">商品出库</a></el-menu-item>
+                            <el-menu-item index="4-3"><a href="#">商品退货</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="5">
+                        <template slot="title">
+                            <span>统计管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="5-1"><a href="salesReport.html" target="mainCont">销售统计</a></el-menu-item>
+                            <el-menu-item index="5-2"><a href="addStockReport.html" target="mainCont">进货统计</a></el-menu-item>
+                            <el-menu-item index="5-3"><a href="#">商品价格统计</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="6">
+                        <template slot="title">
+                            <span>账号管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="6-1" v-show='flag'><a href="account_manage.html" target="mainCont">账号管理</a></el-menu-item>
+                            <el-menu-item index="6-2" v-show='flag'><a href="account_add.html" target="mainCont">添加账号</a></el-menu-item>
+                            <el-menu-item index="6-3"><a href="changePwd.html" target="mainCont">修改密码</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="7">
+                        <template slot="title">
+                            <span>会员管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="7-1"><a href="#">会员管理</a></el-menu-item>
+                            <el-menu-item index="7-2"><a href="#">账号管理</a></el-menu-item>
+                            <el-menu-item index="7-3"><a href="#">添加账号</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                    <el-submenu index="8">
+                        <template slot="title">
+                            <span>系统管理</span>
+                        </template>
+                        <el-menu-item-group>
+                            <el-menu-item index="8-1"><a href="homePage.html" target="mainCont">系统信息</a></el-menu-item>
+                            <el-menu-item index="8-2"><a href="#">系统配置</a></el-menu-item>
+                            <el-menu-item index="8-3"><a href="#">权限管理</a></el-menu-item>
+                            <el-menu-item index="8-4"><a href="#">添加权限组</a></el-menu-item>
+                        </el-menu-item-group>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+
+            <!-- 右侧主要内容 -->
+            <el-container>
+                <!-- 头部-->
+                <el-header height="100px">
+                    <h2>欢迎您 {{loginName}}</h2>
+                    <p>
+                        <a href="#">查看详细的系统信息</a>
+                    </p>
+                </el-header>
+                <!-- 主体部分开始 -->
+                <iframe src="homePage.html" name="mainCont" scrolling="auto" frameborder=0 width="100%" height="100%"></iframe>
+                <!--主体部分结束-->
+                <!-- 尾部 -->
+                <el-footer height:="50px;">
+                    <p>&copy;Copyright 2018 华联超市管理系统</p>
+                </el-footer>
+            </el-container>
+        </el-container>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    flag:true,
+                    loginName:'admin',
+                    saleRank: [
+                        {
+                            goodsName: '海飞丝去屑洗发水',
+                            saleAmount: '8'
+                        },
+                        {
+                            goodsName: '茅台酒',
+                            saleAmount: '6'
+                        },
+                        {
+                            goodsName: '龙凤呈祥',
+                            saleAmount: '5'
+                        },
+                        {
+                            goodsName: '强生婴儿沐浴乳',
+                            saleAmount: '2'
+                        },
+                    ],
+                    outOfStockData: [
+                        {
+                            goodsName: '我的优乐美',
+                            stock: '0',
+                            operation: '入库'
+                        },
+                    ]
+                }
+            },
+            created(){
+                //判断账号是否是超级管理员，如果是，则可以操作账号管理页面，不是则不能操作
+                let rst = document.cookie.indexOf('userGroup=superAdmin');
+                if(rst===-1){
+                    this.flag=false;
+                }else{
+                    this.falg=true;
+                };
+            },
+            mounted(){
+                $.get('/users/checkCookie',(result)=>{
+                    if(result.isOk){
+                        this.loginName = result.loginName;
+                    }else{
+                        return false;
+                    }
+                });
+
+            }
+        })
+    </script>
+</body>
+
+</html>

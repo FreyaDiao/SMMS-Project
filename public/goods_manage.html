@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品管理--管理商品</title>
+    <!-- cookie围墙 -->
+    <script src="/users/checkCookie"></script>
+    <!-- 引入jQuery -->
+    <script src="./javascripts/jquery.js"></script>
+    <!-- 引入vue -->
+    <script src="./javascripts/vue.js"></script>
+    <!-- 引入elementUI -->
+    <link rel="stylesheet" href="styles/elementUI.css">
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入首页样式 -->
+    <link rel="stylesheet" href="styles/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-main class="goodsManage">
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>管理商品</span>
+                </div>
+                <el-form :inline="true" :model="searchPager" class="demo-form-inline">
+                    <el-form-item label="选择分类">
+                        <el-select v-model="searchPager.category" placeholder="--- 选择分类 ---">
+                            <el-option v-for='(v,i) in categoryList' :key='i' :label="v.cg_name" :value="v.cg_id"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="关键字：">
+                        <el-input v-model="searchPager.keywords" placeholder="输入商品名称或者条形码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @click="onSearch">查询</el-button>
+                    </el-form-item>
+                </el-form>
+
+
+                <el-table :data="tableData" stripe style="width: 100%">
+                    <el-table-column label="商品条形码" width="150px">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.barcode }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="商品名称" width="300px">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.goodsname }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="所属分类">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.cg_name }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="售价(元)">
+                        <template slot-scope="scope">
+                            <span class="textRed">{{ scope.row.saleprice|fixPrice}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="进价(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.goodsprice|fixPrice }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="市场价(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.marketprice|fixPrice}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="库存">
+                        <template slot-scope="scope">
+                            <span class="textRed">{{ scope.row.stockNum }}</span>
+                        </template>
+                    </el-table-column>
+                    <!-- <el-table-column label="库存总额(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.totalStorageAmount }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="销售总额(元)">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.salesAmount }}</span>
+                        </template>
+                    </el-table-column> -->
+                    <el-table-column label="操作" width="150px">
+                        <template slot-scope="scope">
+                            <el-button size="mini" type="primary" plain @click="handleEdit(scope.row)">
+                                <i class="el-icon-edit"></i>
+                            </el-button>
+                            <el-button size="mini" type="danger" plain @click="handleDelete(scope.row)">
+                                <i class="el-icon-delete"></i>
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" 
+                    :current-page="searchPager.currentPage" :page-sizes="[1,3,5,7,10,20]"
+                    prev-text="上一页" next-text="下一页" :page-size="searchPager.pageSize" 
+                    layout="total, sizes, prev, pager, next, jumper":total="searchPager.total">
+                </el-pagination>
+
+            </el-card>
+        </el-main>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data() {
+                return {
+                    searchPager: {
+                        currentPage: 1,
+                        pageSize: 5,
+                        total: 1,
+                        keywords: '',
+                        category: ''
+                    },
+                    tableData: [],
+                    categoryList: [],
+                }
+            },
+            methods: {
+                //模糊查询
+                onSearch() {
+                    // console.log(this.searchPager.category,typeof this.searchPager.category);
+                    this.getDataAjax();
+                },
+                handleEdit(row) {
+                    this.$message.info("功能开发中，请耐心等待");
+                },
+                handleDelete(row) {
+                    this.$message.info("功能开发中，请耐心等待");
+                },
+                //更改每页显示数量的函数
+                handleSizeChange(val) {
+                    // console.log(`每页 ${val} 条`);
+                    this.searchPager.pageSize=val;
+                    this.getDataAjax();
+                },
+                //切换当期页面的函数
+                handleCurrentChange(val) {
+                    // console.log(`当前页: ${val}`);
+                    this.searchPager.currentPage=val;                    
+                    this.getDataAjax();
+                },
+                //定义发送ajax获取商品列表的方法
+                getDataAjax() {
+                    $.get('goods/mangt',this.searchPager,(goodsList) => {
+                        this.tableData = goodsList.pagerList;
+                        this.searchPager.total = goodsList.total;
+                    })
+                },
+
+            },
+            filters: {
+                fixPrice(price) {
+                    return price.toFixed(2)
+                }
+            },
+            //挂载完DOM后获取数据渲染页面
+            mounted() {
+                //获取分类列表
+                $.get('/category/mangt', (categoryList) => {
+                    this.categoryList = categoryList;
+                });
+                //获取商品列表
+                this.getDataAjax();
+            },
+        })
+    </script>
+</body>
+
+</html>
